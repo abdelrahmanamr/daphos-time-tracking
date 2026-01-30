@@ -36,3 +36,7 @@ npm run dev
 ```
 
 4. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) (or the port displayed in your terminal).
+
+## 🌍 Deployment
+
+This project is deployed on Vercel: [Live Demo](https://daphos-time-tracking.vercel.app/)
