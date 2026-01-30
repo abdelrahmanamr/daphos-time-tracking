@@ -253,6 +253,7 @@ export const ShiftList: React.FC = () => {
         onCancel={() => setModalVisible(false)}
         footer={null}
         destroyOnHidden
+        style={{ top: 24 }}
       >
         <ShiftForm
           shift={selectedShift}

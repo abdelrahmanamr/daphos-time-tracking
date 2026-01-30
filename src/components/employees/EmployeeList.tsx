@@ -264,6 +264,7 @@ export const EmployeeList: React.FC = () => {
         onCancel={() => setModalVisible(false)}
         footer={null}
         destroyOnHidden
+        style={{ top: 24 }}
       >
         <EmployeeForm
           employee={selectedEmployee}
