@@ -8,6 +8,7 @@ import {
   Typography,
   Button,
   Tooltip,
+  Empty,
 } from "antd";
 import {
   UserOutlined,
@@ -34,7 +35,18 @@ export const EmployeeDashboard: React.FC = () => {
   }
 
   if (!dashboardData) {
-    return null;
+    return (
+      <Card style={{ marginTop: 48, textAlign: "center" }}>
+        <Empty description="No dashboard data found for this employee" />
+        <Button
+          type="primary"
+          style={{ marginTop: 16 }}
+          onClick={() => navigate("/employees")}
+        >
+          Back to Employees
+        </Button>
+      </Card>
+    );
   }
 
   const shiftColumns = [
