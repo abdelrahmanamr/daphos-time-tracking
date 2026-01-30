@@ -1,0 +1,54 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.ant-layout {
+  min-height: 100vh;
+}
+
+.ant-layout-sider {
+  background-color: #20487b;
+}
+
+/* Sidebar collapsible trigger */
+.ant-layout-sider-trigger {
+  background: #20487b !important; /* same as navbar */
+  color: #fff !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Hover state */
+.ant-layout-sider-trigger:hover {
+  background: #18365c !important; /* slightly lighter for hover */
+}
+
+.ant-drawer-close {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ant-drawer-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
