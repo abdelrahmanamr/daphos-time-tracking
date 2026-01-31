@@ -30,10 +30,13 @@ import { useShiftData } from "../../hooks/useShiftData";
 import { useEmployeesData } from "../../hooks/useEmployeesData";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import isBetween from "dayjs/plugin/isBetween";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 // import Title from "antd/es/typography/Title";
 
-dayjs.extend(isBetween);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
 const { Option } = Select;
 const { useBreakpoint } = Grid;
 
@@ -51,9 +54,8 @@ export const ShiftList: React.FC = () => {
   >("all");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [dateRange, setDateRange] = useState<
-    [Dayjs | null, Dayjs | null] | null
-  >(null);
+  const [fromDate, setFromDate] = useState<Dayjs | null>(null);
+  const [toDate, setToDate] = useState<Dayjs | null>(null);
 
   const [search, setSearch] = useState("");
 
@@ -128,15 +130,10 @@ export const ShiftList: React.FC = () => {
       !search || employeeName.includes(search.toLowerCase());
 
     const matchesDate =
-      !dateRange ||
-      (dateRange[0] &&
-        dateRange[1] &&
-        dayjs(shift.date).isBetween(
-          dateRange[0].startOf("day"),
-          dateRange[1].endOf("day"),
-          "day",
-          "[]",
-        ));
+      (!fromDate && !toDate) ||
+      ((!fromDate ||
+        dayjs(shift.date).isSameOrAfter(fromDate.startOf("day"))) &&
+        (!toDate || dayjs(shift.date).isSameOrBefore(toDate.endOf("day"))));
 
     return matchesStatus && matchesSearch && matchesDate;
   });
@@ -257,19 +254,35 @@ export const ShiftList: React.FC = () => {
                   </Form.Item>
 
                   <Form.Item label="Shift Date">
-                    <DatePicker.RangePicker
-                      style={{ width: "100%" }}
-                      value={dateRange}
-                      onChange={(range) => setDateRange(range)}
-                      allowClear
-                    />
+                    <Flex gap={8} vertical={isMobile}>
+                      <DatePicker
+                        placeholder="From date"
+                        style={{ width: "100%" }}
+                        value={fromDate}
+                        onChange={(date) => setFromDate(date)}
+                        allowClear
+                      />
+
+                      <DatePicker
+                        placeholder="To date"
+                        style={{ width: "100%" }}
+                        value={toDate}
+                        onChange={(date) => setToDate(date)}
+                        allowClear
+                        disabledDate={(current) =>
+                          !!fromDate &&
+                          current.isBefore(fromDate.startOf("day"))
+                        }
+                      />
+                    </Flex>
                   </Form.Item>
 
                   <Button
                     block
                     onClick={() => {
                       setSelectedStatus("all");
-                      setDateRange(null);
+                      setFromDate(null);
+                      setToDate(null);
                       form.resetFields();
                     }}
                   >
@@ -282,7 +295,7 @@ export const ShiftList: React.FC = () => {
             <Button
               block={isMobile}
               icon={
-                selectedStatus !== "all" || dateRange ? (
+                selectedStatus !== "all" || fromDate || toDate ? (
                   <FilterFilled style={{ color: "#2f5fb3" }} />
                 ) : (
                   <FilterOutlined />
