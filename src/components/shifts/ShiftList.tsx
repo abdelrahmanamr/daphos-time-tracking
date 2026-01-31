@@ -11,6 +11,7 @@ import {
   Grid,
   Form,
   Tooltip,
+  notification,
 } from "antd";
 import {
   PlusOutlined,
@@ -83,16 +84,25 @@ export const ShiftList: React.FC = () => {
     try {
       if (selectedShift) {
         await api.updateShift(selectedShift.id, values);
-        message.success("Shift updated successfully");
+        notification.success({
+          title: `Shift updated successfully`,
+        });
       } else {
         await api.createShift(values);
-        message.success("Shift created successfully");
+        notification.success({
+          title: `Shift created successfully`,
+        });
       }
       setModalVisible(false);
       refetchShifts();
     } catch (error) {
       console.log(error);
-      message.error("Operation failed");
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+      notification.error({
+        title: `Shift created successfully`,
+        description: message,
+      });
     }
   };
 

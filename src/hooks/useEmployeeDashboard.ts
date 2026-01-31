@@ -26,7 +26,7 @@ export const useEmployeeDashboard = (employeeId?: string) => {
         error instanceof Error ? error.message : "Something went wrong";
 
       notification.error({
-        message: "Failed to load dashboard data",
+        title: "Failed to load dashboard data",
         description: message,
       });
     } finally {

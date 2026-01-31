@@ -5,13 +5,13 @@ import {
   Space,
   Tag,
   Modal,
-  message,
   Flex,
   Grid,
   Tooltip,
   Dropdown,
   Form,
   Select,
+  notification,
 } from "antd";
 import {
   PlusOutlined,
@@ -68,12 +68,19 @@ export const EmployeeList: React.FC = () => {
       cancelText: "No",
       onOk: async () => {
         try {
-          await api.updateEmployee(id, { status: "inactive" });
-          message.success("Employee deactivated");
+          const employee = await api.updateEmployee(id, { status: "inactive" });
+          notification.success({
+            title: `Employee ${employee.firstName} ${employee.lastName} deactivated`,
+          });
           refetchEmployees();
         } catch (error) {
           console.log(error);
-          message.error("Failed to deactivate employee");
+          const message =
+            error instanceof Error ? error.message : "Something went wrong";
+          notification.error({
+            title: `Failed to deactivate employee`,
+            description: message,
+          });
         }
       },
     });
@@ -84,17 +91,26 @@ export const EmployeeList: React.FC = () => {
   ) => {
     try {
       if (selectedEmployee) {
-        await api.updateEmployee(selectedEmployee.id, values);
-        message.success("Employee updated successfully");
+        const employee = await api.updateEmployee(selectedEmployee.id, values);
+        notification.success({
+          title: `Employee ${employee.firstName} ${employee.lastName} updated successfully`,
+        });
       } else {
-        await api.createEmployee(values);
-        message.success("Employee created successfully");
+        const employee = await api.createEmployee(values);
+        notification.success({
+          title: `Employee ${employee.firstName} ${employee.lastName} created successfully`,
+        });
       }
       setModalVisible(false);
       refetchEmployees();
     } catch (error) {
       console.log(error);
-      message.error("Operation failed");
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+      notification.error({
+        title: `Operation failed`,
+        description: message,
+      });
     }
   };
 

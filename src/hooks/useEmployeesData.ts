@@ -21,7 +21,7 @@ export const useEmployeesData = (): UseEmployeesDataProps => {
       const message =
         error instanceof Error ? error.message : "Something went wrong";
       notification.error({
-        message: "Failed to fetch employees",
+        title: "Failed to fetch employees",
         description: message,
       });
     } finally {
