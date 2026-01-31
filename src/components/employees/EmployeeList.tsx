@@ -12,6 +12,7 @@ import {
   Form,
   Select,
   notification,
+  Badge,
 } from "antd";
 import {
   PlusOutlined,
@@ -256,9 +257,15 @@ export const EmployeeList: React.FC = () => {
               </div>
             )}
           >
-            <Button block={isMobile} icon={<FilterOutlined />}>
-              Filter
-            </Button>
+            <Badge dot={selectedStatus !== "all"}>
+              <Button
+                type={selectedStatus !== "all" ? "primary" : "default"}
+                block={isMobile}
+                icon={<FilterOutlined />}
+              >
+                Filter
+              </Button>
+            </Badge>
           </Dropdown>
         </Flex>
 

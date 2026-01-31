@@ -12,6 +12,8 @@ import {
   Form,
   Tooltip,
   notification,
+  DatePicker,
+  Badge,
 } from "antd";
 import {
   PlusOutlined,
@@ -19,7 +21,7 @@ import {
   DeleteOutlined,
   FilterOutlined,
 } from "@ant-design/icons";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import type { Shift } from "../../types";
 import { api } from "../../services/api";
 import { ShiftForm } from "./ShiftForm";
@@ -28,8 +30,10 @@ import { useShiftData } from "../../hooks/useShiftData";
 import { useEmployeesData } from "../../hooks/useEmployeesData";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import isBetween from "dayjs/plugin/isBetween";
 // import Title from "antd/es/typography/Title";
 
+dayjs.extend(isBetween);
 const { Option } = Select;
 const { useBreakpoint } = Grid;
 
@@ -45,6 +49,10 @@ export const ShiftList: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<
     "all" | "active" | "inactive"
   >("all");
+
+  const [dateRange, setDateRange] = useState<
+    [Dayjs | null, Dayjs | null] | null
+  >(null);
 
   const [search, setSearch] = useState("");
 
@@ -118,7 +126,18 @@ export const ShiftList: React.FC = () => {
     const matchesSearch =
       !search || employeeName.includes(search.toLowerCase());
 
-    return matchesStatus && matchesSearch;
+    const matchesDate =
+      !dateRange ||
+      (dateRange[0] &&
+        dateRange[1] &&
+        dayjs(shift.date).isBetween(
+          dateRange[0].startOf("day"),
+          dateRange[1].endOf("day"),
+          "day",
+          "[]",
+        ));
+
+    return matchesStatus && matchesSearch && matchesDate;
   });
 
   const columns = [
@@ -226,10 +245,20 @@ export const ShiftList: React.FC = () => {
                     </Select>
                   </Form.Item>
 
+                  <Form.Item label="Shift Date">
+                    <DatePicker.RangePicker
+                      style={{ width: "100%" }}
+                      value={dateRange}
+                      onChange={(range) => setDateRange(range)}
+                      allowClear
+                    />
+                  </Form.Item>
+
                   <Button
                     block
                     onClick={() => {
                       setSelectedStatus("all");
+                      setDateRange(null);
                       form.resetFields();
                     }}
                   >
@@ -239,9 +268,17 @@ export const ShiftList: React.FC = () => {
               </div>
             )}
           >
-            <Button block={isMobile} icon={<FilterOutlined />}>
-              Filter
-            </Button>
+            <Badge dot={selectedStatus !== "all" || !!dateRange}>
+              <Button
+                block={isMobile}
+                type={
+                  selectedStatus !== "all" || dateRange ? "primary" : "default"
+                }
+                icon={<FilterOutlined />}
+              >
+                Filter
+              </Button>
+            </Badge>
           </Dropdown>
         </Flex>
 
