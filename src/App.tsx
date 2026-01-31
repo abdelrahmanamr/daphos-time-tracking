@@ -24,6 +24,9 @@ function App() {
               element={<EmployeeDashboard />}
             />
             <Route path="/shifts" element={<ShiftList />} />
+
+            {/* Wildcard / fallback route */}
+            <Route path="*" element={<Navigate to="/employees" replace />} />
           </Routes>
         </MainLayout>
       </BrowserRouter>
