@@ -13,13 +13,13 @@ import {
   Tooltip,
   notification,
   DatePicker,
-  Badge,
 } from "antd";
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   FilterOutlined,
+  FilterFilled,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import type { Shift } from "../../types";
@@ -49,6 +49,7 @@ export const ShiftList: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<
     "all" | "active" | "inactive"
   >("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [dateRange, setDateRange] = useState<
     [Dayjs | null, Dayjs | null] | null
@@ -140,6 +141,16 @@ export const ShiftList: React.FC = () => {
     return matchesStatus && matchesSearch && matchesDate;
   });
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (value: "all" | "active" | "inactive") => {
+    setSelectedStatus(value);
+    setCurrentPage(1);
+  };
+
   const columns = [
     {
       title: "Employee",
@@ -216,7 +227,7 @@ export const ShiftList: React.FC = () => {
             placeholder="Search by employee"
             prefix={<SearchOutlined />}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             allowClear
             style={{ flex: 1, minWidth: 220 }}
           />
@@ -237,7 +248,7 @@ export const ShiftList: React.FC = () => {
                     <Select
                       placeholder="Filter by status"
                       value={selectedStatus}
-                      onChange={setSelectedStatus}
+                      onChange={handleStatusChange}
                     >
                       <Option value="all">All</Option>
                       <Option value="active">Active</Option>
@@ -268,17 +279,18 @@ export const ShiftList: React.FC = () => {
               </div>
             )}
           >
-            <Badge dot={selectedStatus !== "all" || !!dateRange}>
-              <Button
-                block={isMobile}
-                type={
-                  selectedStatus !== "all" || dateRange ? "primary" : "default"
-                }
-                icon={<FilterOutlined />}
-              >
-                Filter
-              </Button>
-            </Badge>
+            <Button
+              block={isMobile}
+              icon={
+                selectedStatus !== "all" || dateRange ? (
+                  <FilterFilled style={{ color: "#2f5fb3" }} />
+                ) : (
+                  <FilterOutlined />
+                )
+              }
+            >
+              Filter
+            </Button>
           </Dropdown>
         </Flex>
 
@@ -293,6 +305,13 @@ export const ShiftList: React.FC = () => {
         rowKey="id"
         loading={shiftsLaoding}
         scroll={{ x: "max-content" }}
+        pagination={{
+          pageSize: 10,
+          current: currentPage,
+          onChange: (page) => setCurrentPage(page),
+          showTotal: (total, range) =>
+            `${range[0]}–${range[1]} of ${total} shifts`,
+        }}
       />
       <Modal
         title={selectedShift ? "Edit Shift" : "Add Shift"}

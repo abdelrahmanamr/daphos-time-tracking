@@ -12,7 +12,6 @@ import {
   Form,
   Select,
   notification,
-  Badge,
 } from "antd";
 import {
   PlusOutlined,
@@ -21,6 +20,7 @@ import {
   SearchOutlined,
   FilterOutlined,
   EyeOutlined,
+  FilterFilled,
 } from "@ant-design/icons";
 import type { Employee } from "../../types";
 import { api } from "../../services/api";
@@ -38,6 +38,7 @@ export const EmployeeList: React.FC = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(
     null,
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const screens = useBreakpoint();
@@ -129,6 +130,11 @@ export const EmployeeList: React.FC = () => {
     return matchesStatus && matchesSearch;
   });
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
   const columns = [
     {
       title: "Name",
@@ -215,7 +221,7 @@ export const EmployeeList: React.FC = () => {
             placeholder="Search by name"
             prefix={<SearchOutlined />}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             allowClear
             style={{ flex: 1, minWidth: 220 }}
           />
@@ -257,15 +263,18 @@ export const EmployeeList: React.FC = () => {
               </div>
             )}
           >
-            <Badge dot={selectedStatus !== "all"}>
-              <Button
-                type={selectedStatus !== "all" ? "primary" : "default"}
-                block={isMobile}
-                icon={<FilterOutlined />}
-              >
-                Filter
-              </Button>
-            </Badge>
+            <Button
+              block={isMobile}
+              icon={
+                selectedStatus !== "all" ? (
+                  <FilterFilled style={{ color: "#2f5fb3" }} />
+                ) : (
+                  <FilterOutlined />
+                )
+              }
+            >
+              Filter
+            </Button>
           </Dropdown>
         </Flex>
 
@@ -280,6 +289,13 @@ export const EmployeeList: React.FC = () => {
         rowKey="id"
         loading={loading}
         scroll={{ x: "max-content" }}
+        pagination={{
+          pageSize: 10,
+          current: currentPage,
+          onChange: (page) => setCurrentPage(page),
+          showTotal: (total, range) =>
+            `${range[0]}–${range[1]} of ${total} employees`,
+        }}
       />
       <Modal
         title={selectedEmployee ? "Edit Employee" : "Add Employee"}
